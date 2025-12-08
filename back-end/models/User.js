@@ -1,6 +1,7 @@
 const {Schema,model}=require('mongoose');
 
 const ROLES = ['Driver','Admin'];
+const STATUS = ["available", "OnDuty", "suspended", "inactive","active"];
 
 const userSchema= new Schema({
      name: {
@@ -34,9 +35,10 @@ const userSchema= new Schema({
     default: 'https://imgs.search.brave.com/jHDp_R14w-tbRDiYsyiOCGDeCSPE4WqsVfFwiXVDyow/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzExLzY4LzUwLzU3/LzM2MF9GXzExNjg1/MDU3OTRfSUJDRWlh/ZnNJckhGSjA5ZTY1/UDJ2aDUxMTVDMVhJ/N2UuanBn',
   },
 
-  status: {
-    type: String,
-  },
+   status: {
+      type: String,
+      enum: STATUS,
+    },
 
   resetToken: {
     type: String,
