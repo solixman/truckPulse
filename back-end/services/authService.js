@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const jwtService = require('./jwtService');
 const bcrypt = require('bcrypt');
-const userService = require('../services/userService');
+const userService = require('./userService');
 module.exports = {
 
     async login({ email, password }) {
