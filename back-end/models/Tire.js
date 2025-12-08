@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+//all needed models
 const STATUS = ["mounted", "inStorage", "needToBeReplaced", "replaced"];
 const tireSchema = new mongoose.Schema(
   {
