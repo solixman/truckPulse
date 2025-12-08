@@ -6,7 +6,7 @@ const truckSchema = new Schema(
     model: { type: String },
     status:{type:string},
     mileage: { type: Number, default: 0 },
-    fuelConsumed: { type: Number, default: 0 },
+    currentFuel: { type: Number, default: 0 },
     tires: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tire" }],
   },
   { timestamps: true }
