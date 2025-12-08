@@ -1,0 +1,72 @@
+const authService = require('../services/authService');
+const User = require("../models/User");
+const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+
+
+module.exports = {
+
+    async login(req, res) {
+
+        try {
+
+            const { existingUser, tokens } = await authService.login(req.body);
+
+            res.cookie('jwt', tokens.refreshToken, {
+                httpOnly: true,
+                sameSite: 'None', secure: true,
+                maxAge: 24 * 60 * 60 * 1000 * 7
+            });
+
+            res.json({
+                token: tokens.accessToken,
+                user: { id: existingUser._id, email: existingUser.email }
+            }
+            );
+
+        } catch (err) {
+            res.status(400).json({ error: err.message });
+        }
+    },
+
+    async register(req, res) {
+        try {
+            const { user, tokens } = await authService.register(req.body,'patient');
+
+            res.cookie('jwt', tokens.refreshToken, {
+                httpOnly: true,
+                sameSite: 'None',
+                secure: true,
+                maxAge: 7 * 24 * 60 * 60 * 1000 
+            });
+
+            res.status(201).json({
+                token: tokens.accessToken,
+                user: { id: user._id, email: user.email }
+            });
+
+        } catch (err) {
+            res.status(400).json({ error: err.message });
+        }
+    },
+
+
+
+    async logout(req, res) {
+        try {
+            res.clearCookie('jwt', {
+                httpOnly: true,
+                sameSite: 'None',
+                secure: true
+            });
+
+            res.status(200).json({ message: "Logged out successfully" });
+        } catch (err) {
+            res.status(500).json({ error: "Something went wrong during logout" });
+        }
+    }
+
+
+
+
+}
