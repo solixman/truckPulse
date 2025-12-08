@@ -22,8 +22,7 @@ const userSchema= new Schema({
 
   role: {
     type: String,
-    enum: ROLES,
-    default: 'nurse', // most restrictive by default
+    enum: ROLES, 
   },
 
   phone: {
