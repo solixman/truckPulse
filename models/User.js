@@ -1,7 +1,6 @@
 const {Schema,model}=require('mongoose');
 
-const ROLES = ['patient','admin', 'doctor', 'nurse'];
-const GENDERS = ['male', 'female'];
+const ROLES = ['Driver','Admin'];
 
 const userSchema= new Schema({
      name: {
@@ -48,16 +47,6 @@ const userSchema= new Schema({
   dateOfBirth: {
     type: Date,
   },
-
-  gender: {
-    type: String,
-    enum: GENDERS,
-  },
-
-  specialty: {
-    type: String,
-  },
-
   resetToken: {
     type: String,
   },

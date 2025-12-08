@@ -31,7 +31,13 @@ module.exports = {
 
     async register(req, res) {
         try {
-            const { user, tokens } = await authService.register(req.body,'patient');
+            let role;
+            if(req.body.role)  {
+                role= req.body.role
+            }else {
+                role = 'Driver'
+            }
+            const { user, tokens } = await authService.register(req.body,role);
 
             res.cookie('jwt', tokens.refreshToken, {
                 httpOnly: true,
