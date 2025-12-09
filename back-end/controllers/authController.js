@@ -1,7 +1,4 @@
 const authService = require('../services/authService');
-const User = require("../models/User");
-const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
 
 
 module.exports = {
