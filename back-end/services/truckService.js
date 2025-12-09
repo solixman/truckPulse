@@ -55,4 +55,4 @@ function makeQuery(filters){
 }
 
 
-module.export = {create,getAll};
+module.exports= {create,getAll}
