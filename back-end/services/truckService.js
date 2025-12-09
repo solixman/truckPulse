@@ -7,23 +7,24 @@ export async function create({licensePlate,model,mileage,status="available",curr
     try {
         const truck = await Truck.create(filters,{licensePlate,model,mileage,status,currentFuel});
         
-        const query = this.makeQuery(filters);
-
         if(tiers=!null){
             console.log("assign tiers");
         }
-          return truck  
+        return truck  
     } catch (error) {
         throw new Error(error.message)
     }
 }
 
 
+
 export async function getAll(){
-try {
+    try {
 
-    const trucks = await Truck.getAll()
+    const query = makeQuery(filters);
 
+    const trucks = await Truck.find(query);
+    
 
 } catch (error) {
             throw new Error(error.message)
@@ -35,7 +36,7 @@ try {
 
 export function makeQuery(filters){
     try {
-      let query;
+      let query={};
 
         if(filters.licensePlate){
             return query.licensePlate=filters.licensePlate;
@@ -44,8 +45,8 @@ export function makeQuery(filters){
         if(filters.model) query.model=filters.model
         if(filters.mileage) query.mileage=filters.mileage
         if(filters.currentFuel) query.currentFuel=filters.currentFuel
-        if(filters.status) query.status=filters.status
-        0
+        if(filters.status) query.status=filters.status;
+        
         return query;
 
     } catch (error) {
