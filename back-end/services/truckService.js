@@ -9,12 +9,10 @@ async function create({
   tiers = null,
 }) {
   try {
-
-
-    const exists =await checkPlate(licensePlate);
-      if (exists){
-        throw new Error("License plate already exists");
-      }
+    const exists = await checkPlate(licensePlate);
+    if (exists) {
+      throw new Error("License plate already exists");
+    }
 
     const truck = await Truck.create({
       licensePlate,
@@ -68,16 +66,14 @@ function makeQuery(filters) {
 
 async function update(id, data) {
   try {
-
     let truck = await Truck.findById(id);
 
-    if(data.licensePlate != truck.licensePlate){
-      const exists =await checkPlate(data.licensePlate);
-      if (exists){
+    if (data.licensePlate != truck.licensePlate) {
+      const exists = await checkPlate(data.licensePlate);
+      if (exists) {
         throw new Error("License plate already exists");
       }
     }
-
 
     if (!truck)
       throw new Error("something went wrong, this truck doesn't exist");
@@ -98,8 +94,6 @@ async function update(id, data) {
   }
 }
 
-
-
 async function checkPlate(licensePlate) {
   try {
     const existingTruck = await Truck.findOne({ licensePlate });
@@ -107,10 +101,23 @@ async function checkPlate(licensePlate) {
       return true;
     }
     return false;
-
   } catch (error) {
     throw new Error(error.message);
   }
 }
 
-module.exports = { create, getAll, update };
+async function deleteTruck(id) {
+  try {
+    const truck = await Truck.findByIdAndDelete(id);
+
+    if (!truck) {
+      throw new Error("Truck not found");
+    }
+    
+   return truck;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+module.exports = { create, getAll, update, deleteTruck };

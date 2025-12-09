@@ -39,10 +39,25 @@ async function update(req, res) {
       message: "truck updated succesfully",
       truck,
     });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.log(error);
     res.status(400).json({ error: err.message });
   }
 }
 
-module.exports = { create, getAll, update };
+async function deleteTruck(req,res) {
+  try {
+    const truckId = req.params.id;
+    const truck = await truckService.deleteTruck(truckId);
+   
+    return res
+      .status(200)
+      .json({ truck, message: "truck deleted successfully" });
+
+  } catch (error) {
+    
+    res.status(400).json({ error: error.message });
+  }
+}
+
+module.exports = { create, getAll, update, deleteTruck };
