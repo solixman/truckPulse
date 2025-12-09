@@ -6,8 +6,8 @@ const AuthorizedRole =require('../middlewares/AuthorizedRole');
 
 
 
-router.post('/',Authenticated,AuthorizedRole('Admin'),truckController.create);
-router.get('/',Authenticated,AuthorizedRole('Admin'),truckController.getAll);
-router.get('/:id',Authenticated,AuthorizedRole('Admin'),truckController.getTruckById);
-router.put('/:id',Authenticated,AuthorizedRole('Admin'),truckController.update);
-router.delete("/:id", Authenticated, AuthorizedRole("Admin"), truckController.delete);
+router.post('/',Authenticated(req,res,next),AuthorizedRole('Admin'),truckController.create(req,res));
+router.get('/',Authenticated(req,res,next),AuthorizedRole('Admin'),truckController.getAll(req,res));
+router.get('/:id',Authenticated(req,res,next),AuthorizedRole('Admin'),truckController.getTruckById(req,res));
+router.put('/:id',Authenticated(req,res,next),AuthorizedRole('Admin'),truckController.update(req,res));
+router.delete("/:id", Authenticated(req,res,next), AuthorizedRole("Admin"), truckController.delete(req,res));
