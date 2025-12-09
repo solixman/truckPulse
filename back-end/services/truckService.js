@@ -1,15 +1,14 @@
-import Truck from "../models/Truck"
+const Truck= require('../models/Truck')
 
 
-
-export async function create({licensePlate,model,mileage,status="available",currentFuel=0,tiers=null}){
-
+async function create({licensePlate,model,mileage,status="available",currentFuel=0,tiers=null}){
     try {
-        const truck = await Truck.create(filters,{licensePlate,model,mileage,status,currentFuel});
-        
-        if(tiers=!null){
-            console.log("assign tiers");
-        }
+        const truck = await Truck.create({licensePlate,model,mileage,status,currentFuel});
+
+      if (tiers !== null) {
+    console.log("assign tires");
+}
+
         return truck  
     } catch (error) {
         throw new Error(error.message)
@@ -17,15 +16,14 @@ export async function create({licensePlate,model,mileage,status="available",curr
 }
 
 
-
-export async function getAll(){
+async function getAll(filters,skip){
     try {
 
     const query = makeQuery(filters);
 
-    const trucks = await Truck.find(query);
+    const trucks = await Truck.find(query).limit(15).skip(skip);;
     
-
+ return trucks 
 } catch (error) {
             throw new Error(error.message)
 }
@@ -34,12 +32,13 @@ export async function getAll(){
 
 
 
-export function makeQuery(filters){
+function makeQuery(filters){
     try {
       let query={};
 
         if(filters.licensePlate){
-            return query.licensePlate=filters.licensePlate;
+            query.licensePlate=filters.licensePlate;
+            return query ;
         }
 
         if(filters.model) query.model=filters.model
@@ -50,7 +49,10 @@ export function makeQuery(filters){
         return query;
 
     } catch (error) {
-        throw new Error(error.message)
+        throw new Error(error.message);
     }
 
 }
+
+
+module.export = {create,getAll};

@@ -1,4 +1,4 @@
-export default async function isAuthenticated() {
+export async function Authenticated(req,res,next) {
   try {
     const authorization = req.headers["authorization"];
     const token = authorization && authorization.split(" ")[1];

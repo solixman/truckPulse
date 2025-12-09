@@ -1,7 +1,7 @@
 const TruckService = require('../services/truckService')
 
 
-export async function create(req,res) {
+ async function create(req,res) {
   try {
    
     const truck = await TruckService.create(req.body);
@@ -10,12 +10,12 @@ export async function create(req,res) {
 
   } catch (error) {
     console.log(error);
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: error.message });
   }
 }
 
 
-export async function getAll(req,res){
+async function getAll(req,res){
 try {
 
     const filters={
@@ -25,10 +25,13 @@ try {
     status:req.query.status,
     }
 
-   const trucks = await TruckService.getAll(filters,req.body)
+   const trucks = await TruckService.getAll(filters,parseInt(req.query.skip))
+
   return res.status(200).json({trucks});
 } catch (error) {
     console.log(error);
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: error.message });
 }
 }
+
+module.exports = {create,getAll};
