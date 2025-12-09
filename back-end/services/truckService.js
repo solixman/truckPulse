@@ -113,11 +113,28 @@ async function deleteTruck(id) {
     if (!truck) {
       throw new Error("Truck not found");
     }
-    
+
    return truck;
   } catch (error) {
     throw new Error(error.message);
   }
 }
 
-module.exports = { create, getAll, update, deleteTruck };
+async function getOne(id){
+try {
+  
+   const truck = await Truck.findById(id);
+
+    if (!truck) {
+      throw new Error("Truck not found");
+    }
+
+  return truck;
+
+} catch (error) {
+  throw new Error(error.message)
+}
+
+}
+
+module.exports = { create, getAll, update, deleteTruck,getOne };

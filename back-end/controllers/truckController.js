@@ -45,19 +45,35 @@ async function update(req, res) {
   }
 }
 
-async function deleteTruck(req,res) {
+async function deleteTruck(req, res) {
   try {
     const truckId = req.params.id;
     const truck = await truckService.deleteTruck(truckId);
-   
+
     return res
       .status(200)
       .json({ truck, message: "truck deleted successfully" });
-
   } catch (error) {
-    
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 }
 
-module.exports = { create, getAll, update, deleteTruck };
+async function getById(req, res) {
+  try {
+
+    const id = req.params.id;
+    truck = await truckService.getOne(id)
+
+   return res.status(200).json(truck)
+   
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+
+}
+
+
+
+module.exports = { create, getAll, update, deleteTruck , getById};
