@@ -1,4 +1,3 @@
-// services/tireService.js
 const Tire = require("../models/Tire");
 const Truck = require("../models/Truck");
 const Trailer = require("../models/Trailer");
