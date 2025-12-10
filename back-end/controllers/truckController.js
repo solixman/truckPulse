@@ -1,34 +1,79 @@
-const TruckService = require('../services/truckService')
+const truckService = require("../services/truckService");
 
-
-export async function create(req,res) {
+async function create(req, res) {
   try {
-   
-    const truck = await TruckService.create(req.body);
-    
-    return res.status(200).json({truck});
+    const truck = await truckService.create(req.body);
 
+    return res.status(200).json({ truck });
   } catch (error) {
     console.log(error);
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: error.message });
   }
 }
 
+async function getAll(req, res) {
+  try {
+    const filters = {
+      licensePlate: req.query.licensePlate,
+      model: req.query.model,
+      mileage: req.query.mileage,
+      status: req.query.status,
+    };
 
-export async function getAll(req,res){
-try {
+    const trucks = await truckService.getAll(filters, parseInt(req.query.skip));
 
-    const filters={
-    licensePlate:req.query.licensePlate,
-    model:req.query.model,
-    mileage:req.query.mileage,
-    status:req.query.status,
-    }
-
-   const trucks = await TruckService.getAll(filters,req.body)
-  return res.status(200).json({trucks});
-} catch (error) {
+    return res.status(200).json({ trucks });
+  } catch (error) {
     console.log(error);
-    res.status(400).json({ message: err.message });
+    res.status(400).json({ message: error.message });
+  }
 }
+
+async function update(req, res) {
+  try {
+    const truckId = req.params.id;
+
+    const truck = await truckService.update(truckId, req.body);
+
+    return res.status(200).json({
+      message: "truck updated succesfully",
+      truck,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: err.message });
+  }
 }
+
+async function deleteTruck(req, res) {
+  try {
+    const truckId = req.params.id;
+    const truck = await truckService.deleteTruck(truckId);
+
+    return res
+      .status(200)
+      .json({ truck, message: "truck deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+async function getById(req, res) {
+  try {
+
+    const id = req.params.id;
+    truck = await truckService.getOne(id)
+
+   return res.status(200).json(truck)
+   
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+
+}
+
+
+
+module.exports = { create, getAll, update, deleteTruck , getById};

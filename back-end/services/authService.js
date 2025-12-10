@@ -20,14 +20,14 @@ module.exports = {
             if (!isRight) {
                 throw new Error("wrong email or password, please try again");
             }
-
+             
             let tokens = jwtService.create(existingUser);
 
             return { existingUser, tokens }
 
         } catch (err) {
             console.log(err)
-            throw new Error("Something went wrong, try again later");
+            throw new Error(err.message);
         }
     },
 
