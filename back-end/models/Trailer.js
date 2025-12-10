@@ -10,7 +10,8 @@ const trailerSchema = new mongoose.Schema(
       type: String,
       enum: STATUS,
     },
-    attachedTruck: { type: mongoose.Schema.Types.ObjectId, ref: "Truck" },
+    tiers: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tier" }],
+    currentTrip:{type: mongoose.Schema.Types.ObjectId, ref: "Trip" }
   },
   { timestamps: true }
 );

@@ -12,6 +12,7 @@ const truckSchema = new Schema(
     },
     mileage: { type: Number, default: 0 },
     currentFuel: { type: Number, default: 0 },
+    currentTrip :{ type: Schema.Types.ObjectId, ref: "Trip" },
     tires: [{ type: Schema.Types.ObjectId, ref: "Tire" }],
   },
   { timestamps: true }
