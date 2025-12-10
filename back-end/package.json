@@ -17,9 +17,11 @@
   },
   "scripts": {
     "devStart": "nodemon app.js",
-    "seed":"node seeders/seed.js"
+    "seed": "node seeders/seed.js",
+    "test": "jest --runInBand"
   },
   "devDependencies": {
+    "jest": "^30.2.0",
     "nodemon": "^3.1.10"
   }
 }
