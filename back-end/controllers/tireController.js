@@ -1,4 +1,3 @@
-// controllers/tireController.js
 const tireService = require("../services/tireService");
 
 async function create(req, res) {
@@ -7,58 +6,64 @@ async function create(req, res) {
     return res.status(200).json({ tire });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 }
 
 async function getAll(req, res) {
   try {
-    const tires = await tireService.getAll(req.query);
+    const filters = {
+      brand: req.query.brand,
+      size: req.query.size,
+      status: req.query.status,
+      wearLevel: req.query.wearLevel ? parseInt(req.query.wearLevel) : undefined,
+    };
+
+    const skip = req.query.skip ? parseInt(req.query.skip) : 0;
+
+    const tires = await tireService.getAll(filters, skip);
+
     return res.status(200).json({ tires });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 }
 
 async function getById(req, res) {
   try {
-    const tire = await tireService.getOne(req.params.id);
+    const id = req.params.id;
+    const tire = await tireService.getOne(id);
+
     return res.status(200).json(tire);
   } catch (error) {
     console.error(error);
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 }
 
 async function update(req, res) {
   try {
-    const tire = await tireService.update(req.params.id, req.body);
+    const id = req.params.id;
+    const tire = await tireService.update(id, req.body);
+
     return res.status(200).json({ message: "Tire updated successfully", tire });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 }
 
 async function deleteTire(req, res) {
   try {
-    const tire = await tireService.deleteTire(req.params.id);
+    const id = req.params.id;
+    const tire = await tireService.deleteTire(id);
+
     return res.status(200).json({ message: "Tire deleted successfully", tire });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 }
 
-module.exports = {
-  create,
-  getAll,
-  getById,
-  update,
-  deleteTire,
-  // attachToTruck,
-  // detachFromTruck,
-  // attachToTrailer,
-  // detachFromTrailer,
-};
+module.exports = { create, getAll, getById, update, deleteTire };

@@ -16,7 +16,7 @@ describe("Tire Controller", () => {
   });
 
   test("creates a tire", async () => {
-    req.body = { brand: "Michelin" };
+    req.body = { brand: "Michelin", size: "17", status: "inStorage" };
     tireService.create.mockResolvedValue(req.body);
 
     await tireController.create(req, res);
@@ -25,7 +25,7 @@ describe("Tire Controller", () => {
   });
 
   test("gets all tires", async () => {
-    const tires = [{ brand: "Goodyear" }];
+    const tires = [{ brand: "Goodyear", size: "18", status: "mounted" }];
     tireService.getAll.mockResolvedValue(tires);
 
     await tireController.getAll(req, res);
@@ -35,7 +35,7 @@ describe("Tire Controller", () => {
 
   test("gets one tire", async () => {
     req.params.id = "id123";
-    const tire = { brand: "Michelin" };
+    const tire = { brand: "Michelin", size: "17" };
     tireService.getOne.mockResolvedValue(tire);
 
     await tireController.getById(req, res);
@@ -45,8 +45,8 @@ describe("Tire Controller", () => {
 
   test("updates a tire", async () => {
     req.params.id = "id123";
-    req.body = { brand: "Pirelli" };
-    const updated = { brand: "Pirelli" };
+    req.body = { brand: "Pirelli", wearLevel: 40 };
+    const updated = { brand: "Pirelli", wearLevel: 40 };
     tireService.update.mockResolvedValue(updated);
 
     await tireController.update(req, res);
@@ -59,7 +59,7 @@ describe("Tire Controller", () => {
 
   test("deletes a tire", async () => {
     req.params.id = "id123";
-    const deleted = { brand: "Michelin" };
+    const deleted = { brand: "Michelin", size: "17" };
     tireService.deleteTire.mockResolvedValue(deleted);
 
     await tireController.deleteTire(req, res);
