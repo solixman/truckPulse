@@ -11,7 +11,7 @@ const trailerSchema = new mongoose.Schema(
       enum: STATUS,
     },
     tiers: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tier" }],
-    currentTrip:{type: mongoose.Schema.Types.ObjectId, ref: "Trip" }
+    lastMaintenanceDate: { type: Date },
   },
   { timestamps: true }
 );

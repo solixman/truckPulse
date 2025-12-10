@@ -12,8 +12,15 @@ async function create(req, res) {
 
 async function getAll(req, res) {
   try {
-    const filters = req.query || {};
+    const filters = {
+      licensePlate: req.query.licensePlate,
+      model: req.query.model,
+      status: req.query.status,
+      lastMaintenanceDate: req.query.lastMaintenanceDate,
+    };
+
     const skip = parseInt(req.query.skip) || 0;
+
     const trailers = await trailerService.getAll(filters, skip);
     return res.status(200).json({ trailers });
   } catch (error) {

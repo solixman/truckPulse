@@ -6,14 +6,15 @@ const truckSchema = new Schema(
   {
     licensePlate: { type: String, required: true, unique: true },
     model: { type: String },
+    mileage: { type: Number, default: 0 },
+    currentFuel: { type: Number, default: 0 },
+    tires: [{ type: Schema.Types.ObjectId, ref: "Tire" }],
     status: {
       type: String,
       enum: STATUS,
     },
-    mileage: { type: Number, default: 0 },
-    currentFuel: { type: Number, default: 0 },
-    currentTrip :{ type: Schema.Types.ObjectId, ref: "Trip" },
-    tires: [{ type: Schema.Types.ObjectId, ref: "Tire" }],
+    driver:{type:Schema.Types.ObjectId,ref:"User"},
+    lastMaintenanceDate:{type:Date}
   },
   { timestamps: true }
 );
