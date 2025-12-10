@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 
-const STATUS = ["mounted", "inStorage", "needToBeReplaced", "replaced"];
+const STATUS = ["mounted", "inStorage", "ToBeReplaced", "replaced"];
 const tireSchema = new mongoose.Schema(
   {
     brand: { type: String, required: true },
