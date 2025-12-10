@@ -6,7 +6,7 @@ const tripSchema = new mongoose.Schema(
   {
     startingPoint: { type: String, required: true },
     destination: { type: String, required: true },
-   
+    startDate: { type: Date},
     truck: { type: mongoose.Schema.Types.ObjectId, ref: "Truck" },
     status: {
       type: String,
