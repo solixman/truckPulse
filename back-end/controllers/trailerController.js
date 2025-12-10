@@ -1,7 +1,3 @@
-
-
-
-// controllers/trailerController.js
 const trailerService = require("../services/trailerService");
 
 async function create(req, res) {
@@ -39,7 +35,9 @@ async function getById(req, res) {
 async function update(req, res) {
   try {
     const trailer = await trailerService.update(req.params.id, req.body);
-    return res.status(200).json({ message: "Trailer updated successfully", trailer });
+    return res
+      .status(200)
+      .json({ message: "Trailer updated successfully", trailer });
   } catch (error) {
     console.error(error);
     return res.status(400).json({ message: error.message });
@@ -49,7 +47,9 @@ async function update(req, res) {
 async function deleteTrailer(req, res) {
   try {
     const trailer = await trailerService.deleteTrailer(req.params.id);
-    return res.status(200).json({ message: "Trailer deleted successfully", trailer });
+    return res
+      .status(200)
+      .json({ message: "Trailer deleted successfully", trailer });
   } catch (error) {
     console.error(error);
     return res.status(400).json({ message: error.message });

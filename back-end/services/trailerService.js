@@ -1,11 +1,22 @@
-// services/trailerService.js
+
+
 const Trailer = require("../models/Trailer");
 
-async function create({ licensePlate, model, status = "available", attachedTruck = null }) {
+async function create({
+  licensePlate,
+  model,
+  status = "available",
+  attachedTruck = null,
+}) {
   const exists = await Trailer.findOne({ licensePlate });
   if (exists) throw new Error("License plate already exists");
 
-  const trailer = await Trailer.create({ licensePlate, model, status, attachedTruck });
+  const trailer = await Trailer.create({
+    licensePlate,
+    model,
+    status,
+    attachedTruck,
+  });
   return trailer;
 }
 
@@ -38,7 +49,8 @@ async function update(id, data) {
 
   if (data.model) trailer.model = data.model;
   if (data.status) trailer.status = data.status;
-  if (data.attachedTruck !== undefined) trailer.attachedTruck = data.attachedTruck;
+  if (data.attachedTruck !== undefined)
+    trailer.attachedTruck = data.attachedTruck;
 
   await trailer.save();
   return trailer;
