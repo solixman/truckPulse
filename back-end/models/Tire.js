@@ -11,7 +11,6 @@ const tireSchema = new mongoose.Schema(
       type: String,
       enum: STATUS,
     },
-    truck: { type: mongoose.Schema.Types.ObjectId, ref: "Truck" },
     lastReplacedAt: { type: Date },
   },
   { timestamps: true }

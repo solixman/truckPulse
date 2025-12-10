@@ -8,13 +8,14 @@ const tripSchema = new mongoose.Schema(
     destination: { type: String, required: true },
     startDate: { type: Date},
     truck: { type: mongoose.Schema.Types.ObjectId, ref: "Truck" },
+    trailer: { type: mongoose.Schema.Types.ObjectId, ref: "Trailer" },
     status: {
       type: String,
       enum: STATUS,
     },
     startMileage: { type: Number },
     endMileage: { type: Number },
-    fconsumedFuel: { type: Number },
+    consumedFuel: { type: Number },
     notes: { type: String },
   },
   { timestamps: true }
