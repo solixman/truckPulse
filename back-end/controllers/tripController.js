@@ -76,10 +76,29 @@ async function assignTruck(req, res) {
       message: "Truck assigned successfully",
     });
   } catch (error) {
+        console.error(error);
     return res.status(400).json({ message: error.message });
+  }
+}
+
+async function changeStatus(req,res){
+  try {
+    const id = req.params.id;
+    const status=req.query.status
+    const trip = await tripService.changeStatus(id,status);
+
+    
+     return res.status(200).json({
+      trip,
+      message: `trip is now ${trip.status}`,
+    });
+
+  } catch (error) {
+        console.error(error);
+        return res.status(400).json({ message: error.message });
   }
 }
 
 
 
-module.exports = { create, getAll, getById, update, deleteTrip,assignTruck};
+module.exports = { create, getAll, getById, update, deleteTrip,assignTruck,changeStatus};
