@@ -1,4 +1,6 @@
 const Truck = require("../models/Truck");
+const Tire = require("../models/Tire");
+const { removeDuplicates } = require("../utils/tireUtils");
 
 async function create({
   licensePlate,
@@ -134,7 +136,60 @@ try {
 } catch (error) {
   throw new Error(error.message)
 }
-
 }
 
-module.exports = { create, getAll, update, deleteTruck,getOne };
+
+async function attachTires(truckId, tireIds) {
+  try {
+    const truck = await Truck.findById(truckId);
+    if (!truck) throw new Error("Truck not found");
+
+    let tires = await Tire.find({ _id: { $in: tireIds } });
+    if (tires.length !== tireIds.length) throw new Error("Some tires were not found");
+
+    const alreadyMounted = tires.filter((t) => t.status === "mounted");
+    if (alreadyMounted.length > 0) throw new Error("Some tires are already mounted");
+
+    tires = removeDuplicates(tires);
+
+    const MAX_TIRES = 6; 
+    const some = truck.tires.length + tires.length;
+    if (some > MAX_TIRES)
+      throw new Error(
+        `Truck tire limit exceeded (${MAX_TIRES} max). Current: ${truck.tires.length}, adding: ${tires.length}`
+      );
+
+    tires.forEach((t) => {
+      if (!truck.tires.includes(t._id)) truck.tires.push(t._id);
+      t.status = "mounted";
+    });
+
+    await Promise.all([truck.save(), ...tires.map((t) => t.save())]);
+
+    return truck;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+async function detachTire(truckId, tireId) {
+  try {
+    const truck = await Truck.findById(truckId);
+    if (!truck) throw new Error("Truck not found");
+
+    const tire = await Tire.findById(tireId);
+    if (!tire) throw new Error("Tire not found");
+
+    truck.tires = truck.tires.filter((id) => id.toString() !== tireId);
+    tire.status = "inStorage";
+
+    await Promise.all([truck.save(), tire.save()]);
+
+    return { truck, tire };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+
+module.exports = { create, getAll, update, deleteTruck,getOne, attachTires, detachTire };

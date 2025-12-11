@@ -1,10 +1,13 @@
+const Tire = require("../models/Tire");
 const Trailer = require("../models/Trailer");
+const { removeDuplicates } = require("../utils/tireUtils");
+
 
 async function create({
   licensePlate,
   model,
   status = "available",
-  tiers = [],
+  tires = [],
   lastMaintenanceDate = null,
 }) {
   try {
@@ -15,7 +18,7 @@ async function create({
       licensePlate,
       model,
       status,
-      tiers,
+      tires,
       lastMaintenanceDate,
     });
 
@@ -76,7 +79,7 @@ async function update(id, data) {
 
     if (data.model) trailer.model = data.model;
     if (data.status) trailer.status = data.status;
-    if (data.tiers) trailer.tiers = data.tiers;
+    if (data.tires) trailer.tires = data.tires;
     if (data.lastMaintenanceDate)
       trailer.lastMaintenanceDate = data.lastMaintenanceDate;
 
@@ -97,4 +100,70 @@ async function deleteTrailer(id) {
   }
 }
 
-module.exports = { create, getAll, getOne, update, deleteTrailer };
+async function attachTires(trailerId, tireIds) {
+  try {
+    const trailer = await Trailer.findById(trailerId);
+    if (!trailer) throw new Error("trailer not found");
+
+    const tires = await Tire.find({ _id: { $in: tireIds } });
+    if (tires.length !== tireIds.length)
+      throw new Error("Some tires were not found");
+
+    const alreadyMounted = tires.filter((t) => t.status === "mounted");
+    if (alreadyMounted.length > 0)
+      throw new Error("Some tires are already mounted");
+
+    tires = removeDuplicates();
+
+    const MAX_TIRES = 8;
+    const totalAfterAdd = trailer.tires.length + tires.length;
+
+    if (totalAfterAdd > MAX_TIRES) {
+      throw new Error(
+        `Trailer tire limit exceeded (${MAX_TIRES} max). Current: ${trailer.tires.length},adding: ${tires.length},please detach some and retry`
+      );
+    }
+
+    tires.forEach((t) => {
+      if (!trailer.tires.includes(t._id)) {
+        trailer.tires.push(t._id);
+      }
+      t.status = "mounted";
+    });
+
+    await Promise.all([trailer.save(), ...tires.map((t) => t.save())]);
+
+    return trailer;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+async function detachTire(trailerId, tireId) {
+  try {
+    const trailer = await Trailer.findById(trailerId);
+    if (!trailer) throw new Error("Trailer not found");
+
+    const tire = await Tire.findById(tireId);
+    if (!tire) throw new Error("Tire not found");
+
+    trailer.tires = trailer.tires.filter((id) => id.toString() !== tireId);
+    tire.status = "inStorage";
+
+    await Promise.all([trailer.save(), tire.save()]);
+
+    return { trailer, tire };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+module.exports = {
+  create,
+  getAll,
+  getOne,
+  update,
+  deleteTrailer,
+  detachTire,
+  attachTires,
+};
