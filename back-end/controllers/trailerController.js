@@ -63,4 +63,38 @@ async function deleteTrailer(req, res) {
   }
 }
 
-module.exports = { create, getAll, getById, update, deleteTrailer };
+async function attachTires(req, res) {
+  try {
+    const trailerId = req.params.id;
+    const tireIds = req.body.tireIds;
+
+    if (!Array.isArray(tireIds) || tireIds.length === 0)
+      return res.status(400).json({ message: "tireIds must be a non-empty array" });
+
+    const trailer = await trailerService.attachTires(trailerId, tireIds);
+    return res.status(200).json({
+      message: "Tires attached successfully",
+      trailer,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({ message: error.message });
+  }
+}
+
+async function detachTire(req, res) {
+  try {
+    const { trailerId, tireId } = req.params;
+    const result = await trailerService.detachTire(trailerId, tireId);
+    return res.status(200).json({
+      message: "Tire detached from trailer successfully",
+      trailer: result.trailer,
+      tire: result.tire,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({ message: error.message });
+  }
+}
+
+module.exports = { create, getAll, getById, update, deleteTrailer, detachTire, attachTires };

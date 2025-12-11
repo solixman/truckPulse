@@ -41,7 +41,7 @@ async function update(req, res) {
     });
   } catch (error) {
     console.log(error);
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ error: error.message });
   }
 }
 
@@ -75,5 +75,29 @@ async function getById(req, res) {
 }
 
 
+async function attachTires(req, res) {
+  try {
+    const truckId = req.params.id;
+    const tireIds = req.body.tireIds;
 
-module.exports = { create, getAll, update, deleteTruck , getById};
+    const truck = await truckService.attachTires(truckId, tireIds);
+    return res.status(200).json({ message: "Tires attached successfully", truck });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({ message: error.message });
+  }
+}
+
+async function detachTire(req, res) {
+  try {
+    const { truckId, tireId } = req.params;
+    const result = await truckService.detachTire(truckId, tireId);
+    return res.status(200).json({ message: "Tire detached successfully", ...result });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({ message: error.message });
+  }
+}
+
+
+module.exports = { create, getAll, update, deleteTruck , getById, attachTires, detachTire };
