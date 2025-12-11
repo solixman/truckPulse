@@ -10,7 +10,6 @@ async function create(req, res) {
   }
 }
 
-
 async function getAll(req, res) {
   try {
     const filters = {
@@ -20,6 +19,7 @@ async function getAll(req, res) {
       startingPoint: req.query.startingPoint,
       destination: req.query.destination,
     };
+    
     const skip = parseInt(req.query.skip) || 0;
     const trips = await tripService.getAll(filters, skip);
     return res.status(200).json({ trips });
@@ -62,4 +62,24 @@ async function deleteTrip(req, res) {
   }
 }
 
-module.exports = { create, getAll, getById, update, deleteTrip };
+
+async function assignTruck(req, res) {
+  try {
+    const id = req.params.id;
+    const truckId = req.body.truckId;
+
+    const result = await tripService.assignTruck(id, truckId);
+
+    return res.status(200).json({
+      trip: result.trip,
+      truck: result.truck,
+      message: "Truck assigned successfully",
+    });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+}
+
+
+
+module.exports = { create, getAll, getById, update, deleteTrip,assignTruck};

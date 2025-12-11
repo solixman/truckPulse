@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const STATUS = ["toDo", "done", "canceled", "inProgress"];
+const STATUS = ["draft","toDo", "done", "canceled", "inProgress"];
 
 const tripSchema = new mongoose.Schema(
   {
@@ -12,6 +12,7 @@ const tripSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: STATUS,
+      default:"draft"
     },
     startMileage: { type: Number },
     endMileage: { type: Number },

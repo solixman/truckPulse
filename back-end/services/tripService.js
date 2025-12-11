@@ -1,4 +1,5 @@
 const Trip = require("../models/Trip");
+const truckService = require("../services/truckService");
 
 
 async function create(data) {
@@ -26,7 +27,7 @@ async function getAll(filters, skip = 0) {
       .limit(15)
       .skip(skip);
 
-    return trips;
+    return trips; 
   } catch (error) {
     throw new Error(error.message);
   }
@@ -75,4 +76,29 @@ async function deleteTrip(id) {
   }
 }
 
-module.exports = { create, getAll, getOne, update, deleteTrip };
+async function assignTruck(id,truckId){
+    try {
+        
+        const trip = await getOne(id);
+        const truck = await truckService.getOne(truckId);
+
+       if (trip.truck) throw new Error("This trip already has a truck assigned");
+
+       if(truck.status != "available") throw new Error(`can't sign this truck it's${truck.status}`);
+
+        trip.truck = truck._id;
+        truck.status="unavailable";
+        await Promise.all([ truck.save(), trip.save()]);  
+        return {trip,truck};
+
+    } catch (error) {
+         throw new Error(error.message);   
+    }
+}
+
+
+
+
+
+
+module.exports = { create, getAll, getOne, update, deleteTrip, assignTruck };
