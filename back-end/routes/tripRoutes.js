@@ -11,11 +11,9 @@ router.get("/", Authenticated, tripController.getAll);
 
 router.get("/:id", Authenticated, tripController.getById);
 
-router.patch("/:id/status",  Authenticated, tripController.changeStatus);
 
 router.put("/:id", Authenticated, tripController.update);
 
-// Driver  PDF
 
 // router.get("/:id/pdf", Authenticated, AuthorizedRole("Driver"), tripController.downloadPDF);
 
