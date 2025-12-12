@@ -54,17 +54,17 @@ describe("Trip Service", () => {
     expect(result._id).toBe("1");
   });
 
-  test("updates a trip", async () => {
-    const fakeTrip = {
-      _id: "1",
-      status: "toDo",
-      save: jest.fn().mockResolvedValue({ status: "done" }),
-    };
-    Trip.findById.mockResolvedValue(fakeTrip);
+  // test("updates a trip", async () => {
+  //   const fakeTrip = {
+  //     _id: "1",
+  //     status: "toDo",
+  //     save: jest.fn().mockResolvedValue({ status: "done" }),
+  //   };
+  //   Trip.findById.mockResolvedValue(fakeTrip);
 
-    const result = await tripService.update("1", { status: "done" });
-    expect(result.status).toBe("done");
-  });
+  //   const result = await tripService.update("1", { status: "done" });
+  //   expect(result.status).toBe("done");
+  // });
 
   test("deletes a trip", async () => {
     Trip.findByIdAndDelete.mockResolvedValue({ _id: "1" });

@@ -76,7 +76,7 @@ async function assignTruck(req, res) {
       message: "Truck assigned successfully",
     });
   } catch (error) {
-        console.error(error);
+        console.log(error);
     return res.status(400).json({ message: error.message });
   }
 }
@@ -95,7 +95,7 @@ async function changeStatus(req,res){
     });
 
   } catch (error) {
-        console.error(error);
+        console.log(error);
         return res.status(400).json({ message: error.message });
   }
 }
@@ -114,6 +114,7 @@ async function assignTrailer(req, res) {
       message: "trailer assigned successfully",
     });
   } catch (error) {
+    console.log(error)
     return res.status(400).json({ message: error.message });
   }
 }
