@@ -101,5 +101,21 @@ async function changeStatus(req,res){
 }
 
 
+async function assignTrailer(req, res) {
+  try {
+    const id = req.params.id;
+    const trailerId = req.body.trailerId;
 
-module.exports = { create, getAll, getById, update, deleteTrip,assignTruck,changeStatus};
+    const result = await tripService.assigntrailer(id, trailerId);
+
+    return res.status(200).json({
+      trip: result.trip,
+      trailer: result.trailer,
+      message: "trailer assigned successfully",
+    });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+}
+
+module.exports = { create, getAll, getById, update, deleteTrip,assignTruck, assignTrailer, changeStatus};
