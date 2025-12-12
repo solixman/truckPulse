@@ -93,10 +93,11 @@ async function assignTruck(id, truckId) {
   }
 }
 
-async function changeStatus(id, status) {
+async function changeStatus(user,id, status) {
   try {
     let trip = await getOne(id);
-
+  
+     if(user.role=="Driver" && status != "done" && status !="inProgress"  ) throw new Error ("as a driver you can't change status to "+status)
 
     if (trip.status !== status) {
       //todo

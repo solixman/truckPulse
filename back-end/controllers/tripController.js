@@ -85,9 +85,10 @@ async function changeStatus(req,res){
   try {
     const id = req.params.id;
     const status=req.query.status
-    const trip = await tripService.changeStatus(id,status);
+    const user= req.body.user
+    const trip = await tripService.changeStatus(user,id,status);
 
-    
+
      return res.status(200).json({
       trip,
       message: `trip is now ${trip.status}`,
