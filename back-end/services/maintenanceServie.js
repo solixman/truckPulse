@@ -14,5 +14,27 @@ try {
 }
 }
 
+async function create({type,kms,days,description}){
+    try {
+         
+    let rule=new MaintenanceRules();
+
+    if(type) rule.type=type
+    if(kms) rule.kms=kms
+    if(days) rule.days=days
+    if(description) rule.description=description;
+  
+    await rule.save();
+
+    return rule
+        
+    } catch (error) {
+  if (error.code === 11000) {
+    throw new Error(`Rule with this type already exists`);
+  }
+  throw error;    }
+
+}
+
 
 module.exports = {getAll}

@@ -1,5 +1,4 @@
-const MaintenanceRules = require("../models/MaintenanceRules");
-
+const maintenanceServie = require('../services/maintenanceServie')
 
 
 async function getAll(req,res){
@@ -13,6 +12,23 @@ try {
  console.log(error);
  return res.status(400).json({error:error.message})   
 }
+}
+
+async function create(res,req){
+try {
+    
+    const rule = await maintenanceServie.create(req.body)
+
+    res.status(201).json({
+        message:'rule created succesfully',
+        rule
+    }) 
+
+} catch (error) {
+    console.log(error);
+    res.status(400).json({message:error.message})
+}
+
 }
 
 
