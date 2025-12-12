@@ -110,7 +110,7 @@ async function changeStatus(user, status, trip) {
           if (!result.ok) throw new Error(result.error);
 
           trip.status = status;
-          await trip.save();
+          
 
           return trip;
 
@@ -125,7 +125,7 @@ async function changeStatus(user, status, trip) {
           trip.trailer.status = "unavailable";
 
           await Promise.all([
-            trip.save(),
+            
             trip.truck.save(),
             trip.trailer.save(),
           ]);
@@ -143,7 +143,7 @@ async function changeStatus(user, status, trip) {
           trip.trailer.status = "OnTrip";
 
           await Promise.all([
-            trip.save(),
+            
             trip.truck.save(),
             trip.trailer.save(),
           ]);
@@ -169,14 +169,14 @@ async function changeStatus(user, status, trip) {
           }
 
           trip.status = status;
-          await trip.save();
+          
           return trip;
 
         default:
           break;
       }
 
-      await trip.save();
+      
 
       return trip;
     } else {
@@ -244,6 +244,7 @@ async function updateByDriver(
     if (notes) trip.notes = notes;
     if (status) trip = await  changeStatus(user,status,trip);;
 
+    await trip.save();
     return trip;
     
   } catch (error) {
