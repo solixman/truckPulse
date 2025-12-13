@@ -2,7 +2,9 @@ const Trip = require("../models/Trip");
 const truckService = require("../services/truckService");
 const trailerService = require("../services/trailerService");
 const maintenanceService = require("../services/maintenanceServie");
-
+const PDFDocument = require("pdfkit");
+const fs = require("fs");
+const path = require("path");
 
 async function create(data) {
   try {
@@ -45,18 +47,18 @@ async function getOne(id) {
   }
 }
 
-async function update(user,id, data) {
+async function update(user, id, data) {
   try {
     const trip = await getOne(id);
 
     if (data.startingPoint) trip.startingPoint = data.startingPoint;
     if (data.destination) trip.destination = data.destination;
-    if (data.startDate) trip.startDate = data.startDate;  
+    if (data.startDate) trip.startDate = data.startDate;
     if (data.startMileage) trip.startMileage = data.startMileage;
     if (data.notes) trip.notes = data.notes;
     if (data.truck) trip.truck = data.truck;
     if (data.trailer) trip.trailer = data.trailer;
-    if (data.status) trip = await changeStatus(user,data.status,trip);
+    if (data.status) trip = await changeStatus(user, data.status, trip);
 
     await trip.save();
     return trip;
@@ -86,7 +88,7 @@ async function assignTruck(id, truckId) {
       throw new Error(`can't sign this truck it's${truck.status}`);
 
     trip.truck = truck._id;
-    trip.startMileage=truck.mileage;
+    trip.startMileage = truck.mileage;
     truck.status = "unavailable";
     await Promise.all([truck.save(), trip.save()]);
     return { trip, truck };
@@ -113,7 +115,6 @@ async function changeStatus(user, status, trip) {
           if (!result.ok) throw new Error(result.error);
 
           trip.status = status;
-          
 
           return trip;
 
@@ -139,11 +140,7 @@ async function changeStatus(user, status, trip) {
           trip.truck.status = "OnTrip";
           trip.trailer.status = "OnTrip";
 
-          await Promise.all([
-            
-            trip.truck.save(),
-            trip.trailer.save(),
-          ]);
+          await Promise.all([trip.truck.save(), trip.trailer.save()]);
 
           return trip;
 
@@ -166,15 +163,14 @@ async function changeStatus(user, status, trip) {
           }
 
           trip.status = status;
-          
+
           return trip;
 
         default:
           throw new Error(`Unknown status: ${status}`);
           break;
       }
-
-      } else {
+    } else {
       return trip;
     }
   } catch (error) {
@@ -225,7 +221,7 @@ function isReady(trip) {
 async function updateByDriver(
   user,
   id,
-  { startMileage, endMileage, consumedFuel, notes,status }
+  { startMileage, endMileage, consumedFuel, notes, status }
 ) {
   try {
     let trip = await getOne(id);
@@ -237,22 +233,65 @@ async function updateByDriver(
     if (endMileage) trip.endMileage = endMileage;
     if (consumedFuel) trip.consumedFuel = consumedFuel;
     if (notes) trip.notes = notes;
-    if (status) trip = await  changeStatus(user,status,trip);;
+    if (status) trip = await changeStatus(user, status, trip);
 
-    if(endMileage && status === "done"){
-      await maintenanceService.applyMaintenance(trip.truck,trip.trailer,trip);
+    if (endMileage && status === "done") {
+      await maintenanceService.applyMaintenance(trip.truck, trip.trailer, trip);
     }
 
     await trip.save();
     return trip;
-    
   } catch (error) {
-
-  throw new Error(error.message);
+    throw new Error(error.message);
   }
-
 }
 
+async function generatePDF(user, tripId) {
+  try {
+    const trip = await getOne(tripId);
+    console.log(trip.truck);
+    console.log(user);
+
+    if (!trip.truck || trip.truck.driver.toString() !== user.id) {
+      throw new Error("This trip is not assigned to you");
+    }
+
+    const pdfDir = path.join(__dirname, "../pdfs"); 
+
+    
+    if (!fs.existsSync(pdfDir)) {
+      fs.mkdirSync(pdfDir, { recursive: true });
+    }
+
+    const filePath = path.join(pdfDir, `trip_${tripId}.pdf`);
+    const doc = new PDFDocument();
+
+    doc.pipe(fs.createWriteStream(filePath));
+
+    doc.fontSize(20).text("Trip Details", { align: "center" });
+    doc.moveDown();
+
+    doc.fontSize(14).text(`Trip ID: ${trip._id}`);
+    doc.text(`Starting Point: ${trip.startingPoint}`);
+    doc.text(`Destination: ${trip.destination}`);
+    doc.text(`Start Date: ${trip.startDate}`);
+    doc.text(`Start Mileage: ${trip.startMileage}`);
+    doc.text(`Truck: ${trip.truck.model || trip.truck._id}`);
+    doc.text(
+      `Trailer: ${
+        trip.trailer ? trip.trailer.model || trip.trailer._id : "N/A"
+      }`
+    );
+    doc.text(`Status: ${trip.status}`);
+    doc.text(`Notes: ${trip.notes || "None"}`);
+
+    doc.end();
+
+    return filePath;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
 
 module.exports = {
   create,
@@ -264,4 +303,5 @@ module.exports = {
   assignTrailer,
   updateByDriver,
   changeStatus,
+  generatePDF,
 };

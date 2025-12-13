@@ -1,4 +1,6 @@
     const tripService = require("../services/tripService");
+const fs = require("fs");
+const path = require("path");
 
     async function create(req, res) {
       try {
@@ -111,4 +113,25 @@
     }
 
 
-    module.exports = { create, getAll, getById, update, deleteTrip,assignTruck, assignTrailer  };
+    async function generatePDF(req, res) {
+  try {
+    const user = req.user;
+    const tripId = req.params.id;
+
+    const pdfPath = await tripService.generatePDF(user, tripId);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=trip_${tripId}.pdf`
+    );
+
+    fs.createReadStream(pdfPath).pipe(res);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: error.message });
+  }
+}
+
+
+    module.exports = { create, getAll, getById, update, deleteTrip,assignTruck, assignTrailer,generatePDF  };
