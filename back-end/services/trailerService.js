@@ -80,8 +80,7 @@ async function update(id, data) {
     if (data.model) trailer.model = data.model;
     if (data.status) trailer.status = data.status;
     if (data.tires) trailer.tires = data.tires;
-    if (data.lastMaintenanceDate)
-      trailer.lastMaintenanceDate = data.lastMaintenanceDate;
+    if (data.lastMaintenanceDate) trailer.lastMaintenanceDate = data.lastMaintenanceDate;
 
     await trailer.save();
     return trailer;

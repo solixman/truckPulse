@@ -6,6 +6,7 @@ const trailerSchema = new mongoose.Schema(
   {
     licensePlate: { type: String, required: true, unique: true },
     model: { type: String },
+    mileage:{type: Number },
     status: {
       type: String,
       enum: STATUS,
