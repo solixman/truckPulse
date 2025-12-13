@@ -8,6 +8,7 @@ module.exports = {
         try {
 
             const accessToken = jwt.sign({
+                id:user.id,
                 username: user.name,
                 email: user.email,
                 role:user.role,

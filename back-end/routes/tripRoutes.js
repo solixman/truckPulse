@@ -15,8 +15,12 @@ router.get("/:id", Authenticated, tripController.getById);
 router.put("/:id", Authenticated, tripController.update);
 
 
-// router.get("/:id/pdf", Authenticated, AuthorizedRole("Driver"), tripController.downloadPDF);
-
+router.get(
+  "/:id/pdf",
+  Authenticated,
+  AuthorizedRole("Driver"),
+  tripController.generatePDF
+);
 router.delete("/:id", Authenticated, AuthorizedRole("Admin"), tripController.deleteTrip);
 
 module.exports = router;
