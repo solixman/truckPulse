@@ -55,5 +55,33 @@ async function update(id,{ type, kms, days, description }) {
   }
 }
 
+async function applyMaintenance(truck, trailer, trip) {
+  try {
 
-module.exports = { getAll, update, create };
+   const truckRule = await MaintenanceRules.findOne({ type: "truck" });
+   const trailerRule = await MaintenanceRules.findOne({ type: "trailer" });
+
+
+    const mileageDiff = trip.endMileage - trip.startMileage
+      
+
+    if (truck && truckRule && mileageDiff >= truckRule.kms) {
+      truck.status = "inMaintenance";
+    }
+
+    
+    if (trailer && trailerRule && mileageDiff >= trailerRule.kms) {
+      trailer.status = "inMaintenance";
+    }
+
+    await Promise.all([truck.save(), trailer.save()]);
+
+    return { truck, trailer };
+  } catch (error) {
+    throw new Error("Error checking maintenance:" + error.message);
+  }
+}
+
+
+
+module.exports = { getAll, update, create ,applyMaintenance,applyMaintenance};

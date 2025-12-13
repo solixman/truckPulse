@@ -1,6 +1,8 @@
 const Trip = require("../models/Trip");
 const truckService = require("../services/truckService");
 const trailerService = require("../services/trailerService");
+const maintenanceService = require("../services/maintenanceServie");
+
 
 async function create(data) {
   try {
@@ -84,6 +86,7 @@ async function assignTruck(id, truckId) {
       throw new Error(`can't sign this truck it's${truck.status}`);
 
     trip.truck = truck._id;
+    trip.startMileage=truck.mileage;
     truck.status = "unavailable";
     await Promise.all([truck.save(), trip.save()]);
     return { trip, truck };
@@ -123,12 +126,6 @@ async function changeStatus(user, status, trip) {
           trip.status = status;
           trip.truck.status = "unavailable";
           trip.trailer.status = "unavailable";
-
-          await Promise.all([
-            
-            trip.truck.save(),
-            trip.trailer.save(),
-          ]);
 
           return trip;
 
@@ -241,6 +238,10 @@ async function updateByDriver(
     if (consumedFuel) trip.consumedFuel = consumedFuel;
     if (notes) trip.notes = notes;
     if (status) trip = await  changeStatus(user,status,trip);;
+
+    if(endMileage && status === "done"){
+      await maintenanceService.applyMaintenance(trip.truck,trip.trailer,trip);
+    }
 
     await trip.save();
     return trip;
