@@ -173,13 +173,11 @@ async function changeStatus(user, status, trip) {
           return trip;
 
         default:
+          throw new Error(`Unknown status: ${status}`);
           break;
       }
 
-      
-
-      return trip;
-    } else {
+      } else {
       return trip;
     }
   } catch (error) {
@@ -187,7 +185,7 @@ async function changeStatus(user, status, trip) {
   }
 }
 
-async function assigntrailer(id, trailerId) {
+async function assignTrailer(id, trailerId) {
   try {
     const trip = await getOne(id);
     const trailer = await trailerService.getOne(trailerId);
@@ -262,7 +260,7 @@ module.exports = {
   update,
   deleteTrip,
   assignTruck,
-  assigntrailer,
+  assignTrailer,
   updateByDriver,
   changeStatus,
 };

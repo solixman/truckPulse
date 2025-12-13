@@ -111,4 +111,4 @@
     }
 
 
-    module.exports = { create, getAll, getById, update, deleteTrip,assignTruck, assignTrailer,  };
+    module.exports = { create, getAll, getById, update, deleteTrip,assignTruck, assignTrailer  };
