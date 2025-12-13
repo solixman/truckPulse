@@ -76,7 +76,7 @@
         const id = req.params.id;
         const trailerId = req.body.trailerId;
 
-        const result = await tripService.assigntrailer(id, trailerId);
+        const result = await tripService.assignTrailer(id, trailerId);
 
         return res.status(200).json({
           trip: result.trip,
@@ -105,7 +105,7 @@
 
         return res.status(200).json({ message: "Trip updated successfully", trip });
       } catch (error) {
-        console.error(error);
+        console.log(error);
         return res.status(400).json({ message: error.message });
       }
     }
