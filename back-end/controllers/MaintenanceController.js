@@ -2,7 +2,7 @@ const maintenanceServie = require("../services/maintenanceServie");
 
 async function getAll(req, res) {
   try {
-    const rules = maintenanceServie.getAll();
+    const rules = await maintenanceServie.getAll();
 
     return res.status(200).json({ rules });
   } catch (error) {
@@ -11,7 +11,7 @@ async function getAll(req, res) {
   }
 }
 
-async function create(res, req) {
+async function create(req, res) {
   try {
     const rule = await maintenanceServie.create(req.body);
 
