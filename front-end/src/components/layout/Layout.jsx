@@ -9,6 +9,8 @@ export default function Layout({ children }) {
   const { user, logout } = useAuth();
   const location = useLocation();
 
+  console.log('user here', user);
+
   const titles = {
     "/": "Dashboard",
     "/trucks": "Trucks",
@@ -38,7 +40,7 @@ export default function Layout({ children }) {
               <h1 className="text-lg font-semibold tracking-tight">{title}</h1>
             </div>
             <div className="flex items-center gap-4">
-              <div className="text-sm text-slate-600 hidden sm:block">{user?.name || user?.email}</div>
+              <div className="text-sm text-slate-600 hidden sm:block">{user.name}</div>
               <button className="text-sm text-red-600" onClick={logout}>Logout</button>
             </div>
           </div>

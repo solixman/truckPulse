@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import TripList from "../components/trips/TripList";
 import TripForm from "../components/trips/TripForm";
+import { useAuth } from "../context/AuthContext";
 
 export default function TripsPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "Admin";
+
   const [editingTrip, setEditingTrip] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [refreshFlag, setRefreshFlag] = useState(0);
@@ -18,11 +22,9 @@ export default function TripsPage() {
   }
 
   function handleSuccess(savedTrip, isNew) {
-    // Increment refreshFlag to notify TripList to update
     setRefreshFlag((f) => f + 1);
-
-    if (isNew) setShowForm(false); // close form after create
-    else setEditingTrip(savedTrip); // keep form open for update
+    if (isNew) setShowForm(false);
+    else setEditingTrip(savedTrip);
   }
 
   function handleClose() {
@@ -34,21 +36,19 @@ export default function TripsPage() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Trips</h2>
-        <button
-          onClick={handleCreateClick}
-          className="bg-indigo-600 text-white px-3 py-1 rounded"
-        >
-          {showForm ? "Close" : "Add Trip"}
-        </button>
+        {isAdmin && (
+          <button
+            onClick={handleCreateClick}
+            className="bg-indigo-600 text-white px-3 py-1 rounded"
+          >
+            {showForm ? "Close" : "Add Trip"}
+          </button>
+        )}
       </div>
 
       {showForm && (
         <div className="mb-4">
-          <TripForm
-            trip={editingTrip}
-            onSuccess={handleSuccess}
-            onClose={handleClose}
-          />
+          <TripForm trip={editingTrip} onSuccess={handleSuccess} onClose={handleClose} />
         </div>
       )}
 

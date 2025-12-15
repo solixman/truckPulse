@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createTrip, updateTrip, assignTruck, assignTrailer, getTrip } from "../../services/tripService";
-import { getTrucks, updateTruck } from "../../services/truckService";
-import { getTrailers, updateTrailer } from "../../services/trailerService";
+import { getTrucks } from "../../services/truckService";
+import { getTrailers } from "../../services/trailerService";
 import { useAuth } from "../../context/AuthContext";
 import { notify } from "../../services/notificationService";
 
@@ -26,16 +26,29 @@ export default function TripForm({ trip, onSuccess, onClose }) {
 
   useEffect(() => {
     async function loadOptions() {
-      const [tks, trs] = await Promise.all([getTrucks({ status: "available" }).catch(() => []), getTrailers({ status: "available" }).catch(() => [])]);
-      let trucksList = tks || [];
+      if (isDriver) return;
+
+      const [tks, trs] = await Promise.all([
+        getTrucks({ status: "available" }).catch(() => []),
+        getTrailers({ status: "available" }).catch(() => []),
+      ]);
+
+      let trucksList = (tks || []).filter((t) => t.driver); // only trucks with a driver
       let trailersList = trs || [];
-      if (trip?.truck && !trucksList.find((t) => (t._id ?? t.id) === (trip.truck._id ?? trip.truck))) trucksList = [trip.truck, ...trucksList];
-      if (trip?.trailer && !trailersList.find((tr) => (tr._id ?? tr.id) === (trip.trailer._id ?? trip.trailer))) trailersList = [trip.trailer, ...trailersList];
+
+      if (trip?.truck && !trucksList.find((t) => (t._id ?? t.id) === (trip.truck._id ?? trip.truck))) {
+        trucksList = [trip.truck, ...trucksList];
+      }
+
+      if (trip?.trailer && !trailersList.find((tr) => (tr._id ?? tr.id) === (trip.trailer._id ?? trip.trailer))) {
+        trailersList = [trip.trailer, ...trailersList];
+      }
+
       setTrucks(trucksList);
       setTrailers(trailersList);
     }
     loadOptions();
-  }, [trip]);
+  }, [trip, isDriver]);
 
   useEffect(() => {
     if (trip) {
@@ -49,17 +62,23 @@ export default function TripForm({ trip, onSuccess, onClose }) {
         trailer: trip.trailer ? (trip.trailer._id ?? trip.trailer) : "",
         status: trip.status || "draft",
       });
-    } else setForm({ startingPoint: "", destination: "", startDate: "", startMileage: "", notes: "", truck: "", trailer: "", status: "draft" });
+    } else {
+      setForm({ startingPoint: "", destination: "", startDate: "", startMileage: "", notes: "", truck: "", trailer: "", status: "draft" });
+    }
   }, [trip]);
 
-  function update(field, value) { setForm((f) => ({ ...f, [field]: value })); }
-  function disabledStyle() { return "bg-slate-50 cursor-not-allowed"; }
+  function update(field, value) {
+    setForm((f) => ({ ...f, [field]: value }));
+  }
+
+  function disabledStyle() {
+    return "bg-slate-50 cursor-not-allowed";
+  }
 
   async function handleDetachTruck() {
     if (!form.truck || !confirm("Detach this truck?")) return;
     setDetaching(true);
     await updateTrip(trip._id ?? trip.id, { truck: null });
-    await updateTruck(form.truck, { status: "available" });
     setForm((f) => ({ ...f, truck: "" }));
     const updatedTrip = await getTrip(trip._id ?? trip.id);
     onSuccess?.(updatedTrip, false);
@@ -70,7 +89,6 @@ export default function TripForm({ trip, onSuccess, onClose }) {
     if (!form.trailer || !confirm("Detach this trailer?")) return;
     setDetaching(true);
     await updateTrip(trip._id ?? trip.id, { trailer: null });
-    await updateTrailer(form.trailer, { status: "available" });
     setForm((f) => ({ ...f, trailer: "" }));
     const updatedTrip = await getTrip(trip._id ?? trip.id);
     onSuccess?.(updatedTrip, false);
@@ -92,20 +110,34 @@ export default function TripForm({ trip, onSuccess, onClose }) {
       let savedTrip;
       if (trip) {
         savedTrip = await updateTrip(trip._id ?? trip.id, payload);
-        if (form.truck && form.truck !== (trip.truck?._id ?? trip.truck)) await assignTruck(trip._id ?? trip.id, form.truck);
-        if (form.trailer && form.trailer !== (trip.trailer?._id ?? trip.trailer)) await assignTrailer(trip._id ?? trip.id, form.trailer);
+        if (!isDriver) {
+          if (form.truck && form.truck !== (trip.truck?._id ?? trip.truck)) await assignTruck(trip._id ?? trip.id, form.truck);
+          if (form.trailer && form.trailer !== (trip.trailer?._id ?? trip.trailer)) await assignTrailer(trip._id ?? trip.id, form.trailer);
+        }
         onSuccess?.(savedTrip, false);
       } else {
         savedTrip = await createTrip(payload);
         const id = savedTrip._id ?? savedTrip.id;
-        if (form.truck) await assignTruck(id, form.truck);
-        if (form.trailer) await assignTrailer(id, form.trailer);
+        if (!isDriver) {
+          if (form.truck) await assignTruck(id, form.truck);
+          if (form.trailer) await assignTrailer(id, form.trailer);
+        }
         onSuccess?.(savedTrip, true);
       }
     } catch (e) {
       notify(e?.response?.data?.message || "Save failed", "error");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleStatusChange(newStatus) {
+    try {
+      const updated = await updateTrip(trip._id ?? trip.id, { status: newStatus });
+      notify(`Trip marked as ${newStatus}`, "success");
+      onSuccess?.(updated, false);
+    } catch (e) {
+      notify(e?.response?.data?.message || "Failed to update status", "error");
     }
   }
 
@@ -128,40 +160,81 @@ export default function TripForm({ trip, onSuccess, onClose }) {
           <label>Start Mileage</label>
           <input type="number" className="w-full border px-2 py-1 rounded" value={form.startMileage} onChange={(e) => update("startMileage", e.target.value)} />
         </div>
-        <div>
-          <label>Truck</label>
-          <div className="flex gap-2">
-            <select className="w-full border px-2 py-1 rounded" value={form.truck} onChange={(e) => update("truck", e.target.value)} disabled={isDriver}>
-              <option value="">-- No truck --</option>
-              {trucks.map((t) => <option key={t._id ?? t.id} value={t._id ?? t.id}>{t.licensePlate}</option>)}
-            </select>
-            {form.truck && <button type="button" onClick={handleDetachTruck} disabled={detaching} className="bg-orange-600 text-white px-2 rounded">{detaching ? "..." : "Detach"}</button>}
-          </div>
-        </div>
-        <div>
-          <label>Trailer</label>
-          <div className="flex gap-2">
-            <select className="w-full border px-2 py-1 rounded" value={form.trailer} onChange={(e) => update("trailer", e.target.value)} disabled={isDriver}>
-              <option value="">-- No trailer --</option>
-              {trailers.map((tr) => <option key={tr._id ?? tr.id} value={tr._id ?? tr.id}>{tr.licensePlate}</option>)}
-            </select>
-            {form.trailer && <button type="button" onClick={handleDetachTrailer} disabled={detaching} className="bg-orange-600 text-white px-2 rounded">{detaching ? "..." : "Detach"}</button>}
-          </div>
-        </div>
-        {trip && <div>
-          <label>Status</label>
-          <select className="w-full border px-2 py-1 rounded" value={form.status} onChange={(e) => update("status", e.target.value)}>
-            {["draft","toDo","inProgress","done","canceled"].map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
-        </div>}
+
+        {!isDriver && (
+          <>
+            <div>
+              <label>Truck (must have driver)</label>
+              <div className="flex gap-2">
+                <select className="w-full border px-2 py-1 rounded" value={form.truck} onChange={(e) => update("truck", e.target.value)}>
+                  <option value="">-- No truck --</option>
+                  {trucks.map((t) => (
+                    <option key={t._id ?? t.id} value={t._id ?? t.id}>
+                      {t.licensePlate} — {t.driver?.name || "No driver"}
+                    </option>
+                  ))}
+                </select>
+                {form.truck && (
+                  <button type="button" onClick={handleDetachTruck} disabled={detaching} className="bg-orange-600 text-white px-2 rounded">
+                    {detaching ? "..." : "Detach"}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label>Trailer</label>
+              <div className="flex gap-2">
+                <select className="w-full border px-2 py-1 rounded" value={form.trailer} onChange={(e) => update("trailer", e.target.value)}>
+                  <option value="">-- No trailer --</option>
+                  {trailers.map((tr) => (
+                    <option key={tr._id ?? tr.id} value={tr._id ?? tr.id}>
+                      {tr.licensePlate}
+                    </option>
+                  ))}
+                </select>
+                {form.trailer && (
+                  <button type="button" onClick={handleDetachTrailer} disabled={detaching} className="bg-orange-600 text-white px-2 rounded">
+                    {detaching ? "..." : "Detach"}
+                  </button>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+
         <div className="col-span-2">
           <label>Notes</label>
           <textarea className="w-full border px-2 py-1 rounded" value={form.notes} onChange={(e) => update("notes", e.target.value)} />
         </div>
       </div>
-      <div className="mt-3 flex justify-end gap-2">
-        <button type="submit" disabled={loading} className="bg-indigo-600 text-white px-3 py-1 rounded">{loading ? "Saving..." : trip ? "Update Trip" : "Create Trip"}</button>
-        <button type="button" onClick={onClose} className="bg-gray-400 text-white px-3 py-1 rounded">Close</button>
+
+      <div className="mt-3 flex justify-between items-center">
+        {trip && isDriver && (
+          <div className="flex gap-3">
+            {trip.status === "toDo" && (
+              <button type="button" onClick={() => handleStatusChange("inProgress")} className="bg-yellow-500 text-white px-3 py-1 rounded">
+                Start Trip
+              </button>
+            )}
+            {trip.status === "inProgress" && (
+              <button type="button" onClick={() => handleStatusChange("done")} className="bg-green-600 text-white px-3 py-1 rounded">
+                Mark as Done
+              </button>
+            )}
+          </div>
+        )}
+
+        <div className="flex gap-2 ml-auto">
+          {!isDriver && (
+            <button type="submit" disabled={loading} className="bg-indigo-600 text-white px-3 py-1 rounded">
+              {loading ? "Saving..." : trip ? "Update Trip" : "Create Trip"}
+            </button>
+          )}
+          <button type="button" onClick={onClose} className="bg-gray-400 text-white px-3 py-1 rounded">
+            Close
+          </button>
+        </div>
       </div>
     </form>
   );

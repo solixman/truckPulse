@@ -33,14 +33,12 @@ export async function Authenticated(req,res,next) {
         }
       } else {
         req.user = decoded;
-        console.log(req.user)
         next();
       }
     });
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .json({ message: "Something went wrong, please try again later" });
+    res.status(500)
+       .json({ message: "Something went wrong, please try again later" });
   }
 }

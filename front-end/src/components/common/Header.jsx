@@ -14,7 +14,7 @@ export default function Header() {
             <button onClick={logout} className="bg-red-500 px-3 py-1 rounded">Logout</button>
           </>
         ) : (
-          <Link to="/login" className="bg-blue-500 px-3 py-1 rounded">Login</Link>
+          <Link to="/register" className="bg-blue-500 px-3 py-1 rounded">register</Link>
         )}
       </div>
     </header>

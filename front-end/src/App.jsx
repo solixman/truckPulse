@@ -1,6 +1,5 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Header from "./components/common/Header";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/common/ProtectedRoute";
@@ -13,7 +12,7 @@ import TripsPage from "./pages/TripsPage";
 export default function App() {
   return (
     <div className="min-h-screen bg-gray-100">
-      <Header />
+      
       <main >
         <Routes>
           <Route path="/login" element={<Login />} />

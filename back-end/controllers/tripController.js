@@ -21,9 +21,10 @@ const path = require("path");
           startingPoint: req.query.startingPoint,
           destination: req.query.destination,
         };
-        
+        let user =req.user;
+
         const skip = parseInt(req.query.skip) || 0;
-        const trips = await tripService.getAll(filters, skip);
+        const trips = await tripService.getAll(user,filters, skip);
 
         return res.status(200).json({ trips });
       } catch (error) {

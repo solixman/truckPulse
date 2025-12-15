@@ -5,10 +5,12 @@ const maintenanceService = require("../services/maintenanceServie");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const path = require("path");
+const Truck = require("../models/Truck");
+const mongoose = require("mongoose");
 
 async function create(data) {
   try {
-    if(data.status) data.status=undefined;
+    if (data.status) data.status = undefined;
     const trip = await Trip.create(data);
     return trip;
   } catch (error) {
@@ -16,30 +18,62 @@ async function create(data) {
   }
 }
 
-async function getAll(filters, skip = 0) {
+async function getAll(user, filters, skip = 0) {
   try {
-    let query = {};
+    if (user.role === "Driver") {
+      // Find all trucks assigned to this driver
+      const trucks = await Truck.find({ driver: user.id }).select("_id");
 
-    if (filters.status) query.status = filters.status;
-    if (filters.truck) query.truck = filters.truck;
-    if (filters.trailer) query.trailer = filters.trailer;
-    if (filters.startingPoint) query.startingPoint = filters.startingPoint;
-    if (filters.destination) query.destination = filters.destination;
+      if (!trucks.length) return [];
 
-    const trips = await Trip.find(query)
-      .populate("truck")
-      .populate("trailer")
-      .limit(15)
-      .skip(skip);
-    return trips;
+      const truckIds = trucks.map((t) => t._id);
+
+      // Get trips for these trucks with toDo or inProgress
+      const trips = await Trip.find({
+        truck: { $in: truckIds },
+        status: { $in: ["toDo", "inProgress"] },
+      })
+        .populate({
+          path: "truck",
+          populate: { path: "driver", select: "name email _id" },
+        })
+        .populate("trailer")
+        .limit(15)
+        .skip(skip);
+
+      return trips;
+    } else {
+      // Admin: apply filters if provided
+      const query = {};
+      if (filters.trailer) query.trailer = filters.trailer;
+      if (filters.startingPoint) query.startingPoint = filters.startingPoint;
+      if (filters.destination) query.destination = filters.destination;
+      if (filters.status) query.status = filters.status;
+
+      const trips = await Trip.find(query)
+        .populate({
+          path: "truck",
+          populate: { path: "driver", select: "name email _id" },
+        })
+        .populate("trailer")
+        .limit(15)
+        .skip(skip);
+
+      return trips;
+    }
   } catch (error) {
     throw new Error(error.message);
   }
 }
 
+
+
+
+
 async function getOne(id) {
   try {
     const trip = await Trip.findById(id).populate("truck").populate("trailer");
+    console.log(trip);
     if (!trip) throw new Error("Trip not found");
     return trip;
   } catch (error) {
@@ -56,8 +90,8 @@ async function update(user, id, data) {
     if (data.startDate) trip.startDate = data.startDate;
     if (data.startMileage) trip.startMileage = data.startMileage;
     if (data.notes) trip.notes = data.notes;
-   if (data.hasOwnProperty("truck")) trip.truck = data.truck;
-if (data.hasOwnProperty("trailer")) trip.trailer = data.trailer;
+    if (data.hasOwnProperty("truck")) trip.truck = data.truck;
+    if (data.hasOwnProperty("trailer")) trip.trailer = data.trailer;
 
     if (data.status) trip = await changeStatus(user, data.status, trip);
 
@@ -219,6 +253,8 @@ function isReady(trip) {
   return { ok: true };
 }
 
+
+
 async function updateByDriver(
   user,
   id,
@@ -226,9 +262,9 @@ async function updateByDriver(
 ) {
   try {
     let trip = await getOne(id);
+   
+    if (trip.truck.driver.toString() !== user.id) throw new Error("this trip is not assign to you, you can't update it");
 
-    if (trip.truck.driver !== user.id)
-      throw new Error("this trip is not assign to you, you can't update it");
 
     if (startMileage) trip.startMileage = startMileage;
     if (endMileage) trip.endMileage = endMileage;
@@ -250,16 +286,13 @@ async function updateByDriver(
 async function generatePDF(user, tripId) {
   try {
     const trip = await getOne(tripId);
-    console.log(trip.truck);
-    console.log(user);
 
     if (!trip.truck || trip.truck.driver.toString() !== user.id) {
       throw new Error("This trip is not assigned to you");
     }
 
-    const pdfDir = path.join(__dirname, "../pdfs"); 
+    const pdfDir = path.join(__dirname, "../pdfs");
 
-    
     if (!fs.existsSync(pdfDir)) {
       fs.mkdirSync(pdfDir, { recursive: true });
     }
