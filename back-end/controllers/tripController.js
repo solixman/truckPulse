@@ -24,6 +24,7 @@ const path = require("path");
         
         const skip = parseInt(req.query.skip) || 0;
         const trips = await tripService.getAll(filters, skip);
+
         return res.status(200).json({ trips });
       } catch (error) {
         console.error(error);
@@ -94,7 +95,7 @@ const path = require("path");
     async function update(req, res) {
       try {
         const id = req.params.id;
-        const user  = req.body.user;
+        const user  = req.user;
       let trip={}
 
       if (user.role === "Admin") {

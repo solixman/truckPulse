@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  @apply bg-slate-100 text-slate-800 antialiased;
+  margin: 0;
+}
+
+.app-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.card {
+  @apply bg-white rounded-lg shadow-sm p-4;
+}
+
+.table-row-hover tr:hover {
+  @apply bg-slate-50;
+}
+.table-head {
+  @apply bg-slate-100 text-left text-sm;
+}

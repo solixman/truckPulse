@@ -8,6 +8,7 @@ const path = require("path");
 
 async function create(data) {
   try {
+    if(data.status) data.status=undefined;
     const trip = await Trip.create(data);
     return trip;
   } catch (error) {
@@ -30,7 +31,6 @@ async function getAll(filters, skip = 0) {
       .populate("trailer")
       .limit(15)
       .skip(skip);
-
     return trips;
   } catch (error) {
     throw new Error(error.message);
@@ -49,15 +49,16 @@ async function getOne(id) {
 
 async function update(user, id, data) {
   try {
-    const trip = await getOne(id);
+    let trip = await getOne(id);
 
     if (data.startingPoint) trip.startingPoint = data.startingPoint;
     if (data.destination) trip.destination = data.destination;
     if (data.startDate) trip.startDate = data.startDate;
     if (data.startMileage) trip.startMileage = data.startMileage;
     if (data.notes) trip.notes = data.notes;
-    if (data.truck) trip.truck = data.truck;
-    if (data.trailer) trip.trailer = data.trailer;
+   if (data.hasOwnProperty("truck")) trip.truck = data.truck;
+if (data.hasOwnProperty("trailer")) trip.trailer = data.trailer;
+
     if (data.status) trip = await changeStatus(user, data.status, trip);
 
     await trip.save();

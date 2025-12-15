@@ -125,7 +125,8 @@ async function deleteTruck(id) {
 async function getOne(id){
 try {
   
-   const truck = await Truck.findById(id);
+  //populate not tested yet
+   const truck = await Truck.findById(id).populate('driver');
 
     if (!truck) {
       throw new Error("Truck not found");

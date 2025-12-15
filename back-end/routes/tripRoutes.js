@@ -9,6 +9,11 @@ router.post("/", Authenticated, AuthorizedRole("Admin"), tripController.create);
 
 router.get("/", Authenticated, tripController.getAll); 
 
+router.post("/:id/assign-truck", Authenticated, AuthorizedRole("Admin"), tripController.assignTruck);
+
+router.post("/:id/assign-trailer", Authenticated, AuthorizedRole("Admin"), tripController.assignTrailer);
+
+
 router.get("/:id", Authenticated, tripController.getById);
 
 

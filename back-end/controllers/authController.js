@@ -6,7 +6,6 @@ module.exports = {
     async login(req, res) {
 
         try {
-
             const { existingUser, tokens } = await authService.login(req.body);
 
             res.cookie('jwt', tokens.refreshToken, {
@@ -17,7 +16,7 @@ module.exports = {
 
             res.json({
                 token: tokens.accessToken,
-                user: { id: existingUser._id, email: existingUser.email }
+                user: { id: existingUser._id,name:existingUser.name, email: existingUser.email,role:existingUser.role }
             }
             );
 
@@ -34,7 +33,8 @@ module.exports = {
             }else {
                 role = 'Driver'
             }
-            const { user, tokens } = await authService.register(req.body,role);
+
+            const { user, tokens } = await authService.register(req.body,"Driver");
 
             res.cookie('jwt', tokens.refreshToken, {
                 httpOnly: true,
@@ -45,7 +45,7 @@ module.exports = {
 
             res.status(201).json({
                 token: tokens.accessToken,
-                user: { id: user._id, email: user.email }
+                user: { id: user._id,name:user.name, email: user.email,role:user.role }
             });
 
         } catch (err) {
