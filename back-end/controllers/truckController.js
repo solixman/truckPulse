@@ -12,7 +12,6 @@ async function create(req, res) {
 }
 
 async function getAll(req, res) {
-  console.log("here");
   try {
     const filters = {
       licensePlate: req.query.licensePlate,
@@ -20,8 +19,9 @@ async function getAll(req, res) {
       mileage: req.query.mileage,
       status: req.query.status,
     };
-
+    
     const trucks = await truckService.getAll(filters, parseInt(req.query.skip));
+    
     
     return res.status(200).json({ trucks });
   } catch (error) {

@@ -30,6 +30,7 @@ const trailerRoutes = require("./routes/trailerRoutes");
 const tireRoutes = require("./routes/tireRoutes");
 const tripRoutes = require("./routes/tripRoutes");
 const maintenanceRoutes = require("./routes/maintenanceRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/trucks", truckRoutes);
@@ -37,5 +38,6 @@ app.use("/api/trailers", trailerRoutes);
 app.use("/api/tires", tireRoutes);
 app.use("/api/trips", tripRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
+app.use("/api/users", userRoutes);
 
 app.listen(process.env.PORT);

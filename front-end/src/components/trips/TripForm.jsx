@@ -32,8 +32,7 @@ export default function TripForm({ trip, onSuccess, onClose }) {
         getTrucks({ status: "available" }).catch(() => []),
         getTrailers({ status: "available" }).catch(() => []),
       ]);
-
-      let trucksList = (tks || []).filter((t) => t.driver); // only trucks with a driver
+      let trucksList = (tks || []).filter((t) => t.driver); 
       let trailersList = trs || [];
 
       if (trip?.truck && !trucksList.find((t) => (t._id ?? t.id) === (trip.truck._id ?? trip.truck))) {

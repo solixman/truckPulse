@@ -6,6 +6,7 @@ async function create({
   licensePlate,
   model,
   mileage,
+  driver,
   status = "available",
   currentFuel = 0,
   tiers = null,
@@ -22,6 +23,7 @@ async function create({
       mileage,
       status,
       currentFuel,
+      driver
     });
 
     if (tiers !== null) {
@@ -38,7 +40,7 @@ async function getAll(filters, skip) {
   try {
     const query = makeQuery(filters);
 
-    const trucks = await Truck.find(query).limit(15).skip(skip);
+    const trucks=  Truck.find(query).populate("driver", "name username email role").limit(15).skip(skip);
 
     return trucks;
   } catch (error) {
@@ -87,6 +89,7 @@ async function update(id, data) {
     if (data.model) truck.model = data.model;
     if (data.status) truck.status = data.status;
     if (data.currentFuel) truck.currentFuel = data.currentFuel;
+    if (data.driver) truck.driver = data.driver;
 
     truck = await truck.save();
 
