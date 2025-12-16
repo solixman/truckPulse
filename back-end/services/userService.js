@@ -1,22 +1,12 @@
-const User = require('../models/User');
-const bcrypt = require('bcrypt');
+const User = require("../models/User");
 
-module.exports = {
-
-    async create({name,email,password},role) {
-        try {
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);
-
-            return  await User.create({
-                name,
-                email,
-                password: hashedPassword,
-                role: role
-            });
-        } catch (err) {
-           console.error(err);
-            throw new Error(err.message);
-        }
-    }
+async function getDrivers() {
+  try {
+    const drivers = await User.find({ role: "Driver" }).select("_id username name email role");
+    return drivers;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
+
+module.exports = { getDrivers };
