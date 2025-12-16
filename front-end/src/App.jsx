@@ -5,7 +5,7 @@ import Register from "./pages/Register";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 import Dashboard from "./pages/Dashboard";
-// import TrucksPage from "./pages/TrucksPage";
+import TrucksPage from "./pages/trucksPage";
 import TripsPage from "./pages/TripsPage";
 
 
@@ -28,7 +28,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          {/* <Route
+          <Route
             path="/trucks"
             element={
               <ProtectedRoute>
@@ -37,7 +37,7 @@ export default function App() {
                 </Layout>
               </ProtectedRoute>
             }
-          /> */}
+          />
           <Route
             path="/trips"
             element={
