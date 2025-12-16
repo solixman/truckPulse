@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import TrucksPage from "./pages/trucksPage";
 import TripsPage from "./pages/TripsPage";
 import TrailerPage from "./pages/trailerPage";
+import TirePage from "./pages/TirePage";
 
 export default function App() {
   return (
@@ -43,6 +44,16 @@ export default function App() {
               <ProtectedRoute>
                 <Layout>
                   <TrailerPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tires"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <TirePage />
                 </Layout>
               </ProtectedRoute>
             }
