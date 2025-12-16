@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getTrips, deleteTrip, downloadPdf } from "../../services/tripService";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/Auth/useAuth";
 import { notify } from "../../services/notificationService";
 import { Edit3, Trash2, FileDown } from "lucide-react";
 
@@ -15,7 +15,10 @@ export default function TripList({ onEdit, refreshFlag }) {
       const data = await getTrips();
       setTrips(data);
     } catch (e) {
-      notify(e?.response?.data?.message || e.message || "Failed to load trips", "error");
+      notify(
+        e?.response?.data?.message || e.message || "Failed to load trips",
+        "error"
+      );
     } finally {
       setLoading(false);
     }
@@ -39,7 +42,9 @@ export default function TripList({ onEdit, refreshFlag }) {
   async function handleDownloadPdf(id) {
     try {
       const blob = await downloadPdf(id);
-      const url = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
+      const url = URL.createObjectURL(
+        new Blob([blob], { type: "application/pdf" })
+      );
       window.open(url, "_blank");
     } catch (e) {
       notify(e?.response?.data?.message || "PDF download failed", "error");
@@ -48,17 +53,24 @@ export default function TripList({ onEdit, refreshFlag }) {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "draft": return "bg-gray-200 text-gray-700";
-      case "toDo": return "bg-blue-100 text-blue-700";
-      case "inProgress": return "bg-yellow-100 text-yellow-700";
-      case "done": return "bg-green-100 text-green-700";
-      case "canceled": return "bg-red-100 text-red-700";
-      default: return "bg-gray-100 text-gray-700";
+      case "draft":
+        return "bg-gray-200 text-gray-700";
+      case "toDo":
+        return "bg-blue-100 text-blue-700";
+      case "inProgress":
+        return "bg-yellow-100 text-yellow-700";
+      case "done":
+        return "bg-green-100 text-green-700";
+      case "canceled":
+        return "bg-red-100 text-red-700";
+      default:
+        return "bg-gray-100 text-gray-700";
     }
   };
 
   if (loading) return <div className="card">Loading trips...</div>;
-  if (!trips || trips.length === 0) return <div className="card">No trips found</div>;
+  if (!trips || trips.length === 0)
+    return <div className="card">No trips found</div>;
 
   return (
     <div className="card overflow-x-auto">
@@ -83,13 +95,26 @@ export default function TripList({ onEdit, refreshFlag }) {
             const trailer = t.trailer || {};
 
             return (
-              <tr key={id} className="border-t hover:bg-slate-50 transition min-h-[80px]">
-                <td className="px-3 py-2 font-mono text-xs">{(id || "").slice(0, 8)}</td>
+              <tr
+                key={id}
+                className="border-t hover:bg-slate-50 transition min-h-[80px]"
+              >
+                <td className="px-3 py-2 font-mono text-xs">
+                  {(id || "").slice(0, 8)}
+                </td>
                 <td className="px-3 py-2">{t.startingPoint}</td>
                 <td className="px-3 py-2">{t.destination}</td>
-                <td className="px-3 py-2">{t.startDate ? new Date(t.startDate).toLocaleDateString() : "-"}</td>
                 <td className="px-3 py-2">
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(t.status)}`}>
+                  {t.startDate
+                    ? new Date(t.startDate).toLocaleDateString()
+                    : "-"}
+                </td>
+                <td className="px-3 py-2">
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(
+                      t.status
+                    )}`}
+                  >
                     {t.status}
                   </span>
                 </td>
@@ -99,7 +124,11 @@ export default function TripList({ onEdit, refreshFlag }) {
                       <div className="bg-slate-100 px-2 py-1 rounded text-xs font-medium">
                         {truck.licensePlate || "No Truck"}
                       </div>
-                      {truck.model && <span className="text-xs text-slate-500">{truck.model}</span>}
+                      {truck.model && (
+                        <span className="text-xs text-slate-500">
+                          {truck.model}
+                        </span>
+                      )}
                     </div>
 
                     {driver && (
@@ -115,7 +144,9 @@ export default function TripList({ onEdit, refreshFlag }) {
                             {(driver.name || driver.email || "D").slice(0, 1)}
                           </div>
                         )}
-                        <div className="text-xs font-medium">{driver.name ?? driver.email}</div>
+                        <div className="text-xs font-medium">
+                          {driver.name ?? driver.email}
+                        </div>
                       </div>
                     )}
 

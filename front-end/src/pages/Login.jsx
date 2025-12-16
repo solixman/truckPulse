@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/Auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/common/Header";
-
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -22,38 +21,34 @@ export default function Login() {
   }
 
   return (
-    
     <div>
-        <Header />
+      <Header />
 
-    <div className="max-w-md mx-auto mt-20 p-6 border rounded shadow">
-      <h2 className="text-2xl mb-4">Login</h2>
-      {error && <div className="mb-3 text-red-600">{error}</div>}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-          className="border p-2 rounded"
-          required
+      <div className="max-w-md mx-auto mt-20 p-6 border rounded shadow">
+        <h2 className="text-2xl mb-4">Login</h2>
+        {error && <div className="mb-3 text-red-600">{error}</div>}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            className="border p-2 rounded"
+            required
           />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          className="border p-2 rounded"
-          required
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            className="border p-2 rounded"
+            required
           />
-        <button
-          type="submit"
-          className="bg-blue-600 text-white p-2 rounded"
-          >
-          Login
-        </button>
-      </form>
+          <button type="submit" className="bg-blue-600 text-white p-2 rounded">
+            Login
+          </button>
+        </form>
+      </div>
     </div>
-            </div>
   );
 }

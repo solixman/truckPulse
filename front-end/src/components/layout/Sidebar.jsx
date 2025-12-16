@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/Auth/useAuth";
 
 const NavItem = ({ to, children }) => (
   <NavLink
@@ -40,41 +40,39 @@ export default function Sidebar({ open, onClose }) {
           </div>
 
           <nav className="mt-4 flex-1 px-2 space-y-1">
-
             <NavItem to="/">
               <span>Dashboard</span>
             </NavItem>
 
-            
-            {(role === "Admin" ) && (
+            {role === "Admin" && (
               <NavItem to="/trucks">
                 <span>Trucks</span>
               </NavItem>
             )}
 
             {/* Admin  Driver */}
-            {(role === "Admin" ||  role === "Driver") && (
+            {(role === "Admin" || role === "Driver") && (
               <NavItem to="/trips">
                 <span>Trips</span>
               </NavItem>
             )}
 
             {/* Admin / Manager */}
-            {(role === "Admin" ) && (
+            {role === "Admin" && (
               <NavItem to="/trailers">
                 <span>Trailers</span>
               </NavItem>
             )}
 
             {/* Admin / Mechanic */}
-            {(role === "Admin" ) && (
+            {role === "Admin" && (
               <NavItem to="/tires">
                 <span>Tires</span>
               </NavItem>
             )}
 
             {/* Admin / Mechanic */}
-            {(role === "Admin" ) && (
+            {role === "Admin" && (
               <NavItem to="/maintenance">
                 <span>Maintenance</span>
               </NavItem>

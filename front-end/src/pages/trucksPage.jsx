@@ -1,7 +1,7 @@
 import { useState } from "react";
 import TruckList from "../components/trucks/TruckList";
 import TruckForm from "../components/trucks/TruckForm";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/Auth/useAuth";
 import { PlusCircle } from "lucide-react";
 
 export default function TrucksPage() {
@@ -43,13 +43,22 @@ export default function TrucksPage() {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Trucks</h2>
-        <button onClick={handleAddClick} className="flex items-center gap-2 bg-indigo-600 text-white px-3 py-1 rounded">
+        <button
+          onClick={handleAddClick}
+          className="flex items-center gap-2 bg-indigo-600 text-white px-3 py-1 rounded"
+        >
           <PlusCircle size={18} />
           <span>{showForm ? "Close" : "Add Truck"}</span>
         </button>
       </div>
 
-      {showForm && <TruckForm truck={editingTruck} onSuccess={handleSuccess} onClose={handleClose} />}
+      {showForm && (
+        <TruckForm
+          truck={editingTruck}
+          onSuccess={handleSuccess}
+          onClose={handleClose}
+        />
+      )}
 
       <TruckList key={refreshFlag} onEdit={handleEdit} />
     </div>

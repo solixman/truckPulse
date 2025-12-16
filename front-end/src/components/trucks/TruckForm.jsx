@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { createTruck, updateTruck } from "../../services/truckService";
 import { getUsers } from "../../services/userService";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/Auth/useAuth";
 import { notify } from "../../services/notificationService";
 
 export default function TruckForm({ truck, onSuccess, onClose }) {
@@ -74,7 +74,10 @@ export default function TruckForm({ truck, onSuccess, onClose }) {
         ? await updateTruck(truck._id, payload)
         : await createTruck(payload);
 
-      notify(truck ? "Truck updated successfully" : "Truck created successfully", "success");
+      notify(
+        truck ? "Truck updated successfully" : "Truck created successfully",
+        "success"
+      );
       onSuccess?.(saved);
     } catch (err) {
       notify(err?.response?.data?.message || "Failed to save truck", "error");
@@ -85,7 +88,9 @@ export default function TruckForm({ truck, onSuccess, onClose }) {
 
   return (
     <form className="bg-white p-4 rounded shadow mb-4" onSubmit={handleSubmit}>
-      <h3 className="font-semibold mb-3">{truck ? "Edit Truck" : "Add Truck"}</h3>
+      <h3 className="font-semibold mb-3">
+        {truck ? "Edit Truck" : "Add Truck"}
+      </h3>
 
       <div className="grid md:grid-cols-2 gap-3">
         <div>
@@ -124,9 +129,13 @@ export default function TruckForm({ truck, onSuccess, onClose }) {
             value={form.status}
             onChange={(e) => update("status", e.target.value)}
           >
-            {["available", "OnTrip", "inMaintenance", "unavailable"].map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
+            {["available", "OnTrip", "inMaintenance", "unavailable"].map(
+              (s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              )
+            )}
           </select>
         </div>
 

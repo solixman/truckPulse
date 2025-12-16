@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import TripList from "../components/trips/TripList";
 import TripForm from "../components/trips/TripForm";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/Auth/useAuth";
 
 export default function TripsPage() {
   const { user } = useAuth();
@@ -48,7 +48,11 @@ export default function TripsPage() {
 
       {showForm && (
         <div className="mb-4">
-          <TripForm trip={editingTrip} onSuccess={handleSuccess} onClose={handleClose} />
+          <TripForm
+            trip={editingTrip}
+            onSuccess={handleSuccess}
+            onClose={handleClose}
+          />
         </div>
       )}
 
