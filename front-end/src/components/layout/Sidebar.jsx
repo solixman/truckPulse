@@ -40,41 +40,41 @@ export default function Sidebar({ open, onClose }) {
           </div>
 
           <nav className="mt-4 flex-1 px-2 space-y-1">
-            {/* Dashboard – everyone */}
+
             <NavItem to="/">
               <span>Dashboard</span>
             </NavItem>
 
-            {/* Admin / Manager */}
-            {(role === "Admin" || role === "Manager") && (
+            
+            {(role === "Admin" ) && (
               <NavItem to="/trucks">
                 <span>Trucks</span>
               </NavItem>
             )}
 
-            {/* Admin / Manager / Driver */}
-            {(role === "Admin" || role === "Manager" || role === "Driver") && (
+            {/* Admin  Driver */}
+            {(role === "Admin" ||  role === "Driver") && (
               <NavItem to="/trips">
                 <span>Trips</span>
               </NavItem>
             )}
 
             {/* Admin / Manager */}
-            {(role === "Admin" || role === "Manager") && (
+            {(role === "Admin" ) && (
               <NavItem to="/trailers">
                 <span>Trailers</span>
               </NavItem>
             )}
 
             {/* Admin / Mechanic */}
-            {(role === "Admin" || role === "Mechanic") && (
+            {(role === "Admin" ) && (
               <NavItem to="/tires">
                 <span>Tires</span>
               </NavItem>
             )}
 
             {/* Admin / Mechanic */}
-            {(role === "Admin" || role === "Mechanic") && (
+            {(role === "Admin" ) && (
               <NavItem to="/maintenance">
                 <span>Maintenance</span>
               </NavItem>

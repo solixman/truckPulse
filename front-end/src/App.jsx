@@ -7,13 +7,12 @@ import Layout from "./components/layout/Layout";
 import Dashboard from "./pages/Dashboard";
 import TrucksPage from "./pages/trucksPage";
 import TripsPage from "./pages/TripsPage";
-
+import TrailerPage from "./pages/trailerPage";
 
 export default function App() {
   return (
     <div className="min-h-screen bg-gray-100">
-      
-      <main >
+      <main>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -38,6 +37,17 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/trailers"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <TrailerPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/trips"
             element={
